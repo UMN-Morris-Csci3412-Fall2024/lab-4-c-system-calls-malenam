@@ -10,10 +10,11 @@
 static int num_dirs, num_regular;
 
 // Function to check if a given path is a directory
-int is_dir(const char* path) {
+bool is_dir(const char* path) {
     struct stat statbuf;
     if (stat(path, &statbuf) != 0) {
-        return 0;
+        // Error occurred, possibly the file doesn't exist
+        return false;
     }
     return S_ISDIR(statbuf.st_mode);
 }
@@ -26,20 +27,41 @@ void process_directory(const char* path) {
     DIR* dir = opendir(path);
     struct dirent* entry;
     if (dir == NULL) {
+        perror("opendir");
         return;
     }
     num_dirs++;  // Increment directory counter
+
+    // Save the current working directory
+    char original_path[1024];
+    if (getcwd(original_path, sizeof(original_path)) == NULL) {
+        perror("getcwd");
+        closedir(dir);
+        return;
+    }
+
+    // Change to the new directory
+    if (chdir(path) != 0) {
+        perror("chdir");
+        closedir(dir);
+        return;
+    }
+
     while ((entry = readdir(dir)) != NULL) {
-        if (entry->d_type == DT_DIR) {
-            if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0) {
-                char new_path[1024];
-                snprintf(new_path, sizeof(new_path), "%s/%s", path, entry->d_name);
-                process_directory(new_path);
+        if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0) {
+            if (entry->d_type == DT_DIR) {
+                process_directory(entry->d_name);
+            } else {
+                num_regular++;  // Increment regular file counter
             }
-        } else {
-            num_regular++;  // Increment regular file counter
         }
     }
+
+    // Change back to the original directory
+    if (chdir(original_path) != 0) {
+        perror("chdir");
+    }
+
     closedir(dir);  // Close the directory
 }
 
