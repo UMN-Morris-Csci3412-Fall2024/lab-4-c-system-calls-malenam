@@ -50,12 +50,14 @@ teardown() {
 
 @test "summarize_tree_ftw works with small directory structure" {
     ./summarize_tree_ftw test_data/fewer_files > "$BATS_TMPDIR"/outputFile
+    cat "$BATS_TMPDIR"/outputFile
     run diff -wbB test_data/small_dir_sizes "$BATS_TMPDIR"/outputFile
     [ "$status" -eq 0 ]
 }
 
 @test "summarize_tree_ftw works with large directory structure" {
     ./summarize_tree_ftw test_data/loads_o_files > "$BATS_TMPDIR"/outputFile
+    cat "$BATS_TMPDIR"/outputFile
     run diff -wbB test_data/large_dir_sizes "$BATS_TMPDIR"/outputFile
     [ "$status" -eq 0 ]
 }
@@ -75,12 +77,14 @@ teardown() {
 
 @test "summarize_tree.sh works with small directory structure" {
     ./summarize_tree.sh test_data/fewer_files > "$BATS_TMPDIR"/outputFile
+    cat "$BATS_TMPDIR"/outputFile
     run diff -wbB test_data/small_dir_sizes "$BATS_TMPDIR"/outputFile
     [ "$status" -eq 0 ]
 }
 
 @test "summarize_tree.sh works with large directory structure" {
     ./summarize_tree.sh test_data/loads_o_files > "$BATS_TMPDIR"/outputFile
+    cat "$BATS_TMPDIR"/outputFile
     run diff -wbB test_data/large_dir_sizes "$BATS_TMPDIR"/outputFile
     [ "$status" -eq 0 ]
 }

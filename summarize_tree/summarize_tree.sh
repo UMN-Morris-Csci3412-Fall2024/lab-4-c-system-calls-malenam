@@ -17,6 +17,5 @@ num_dirs=$(find "$path" -type d | wc -l)
 num_regular=$(find "$path" -type f | wc -l)
 
 # Print the results
-echo "Processed all the files from $path."
 echo "There were $num_dirs directories."
 echo "There were $num_regular regular files."
